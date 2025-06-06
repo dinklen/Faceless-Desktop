@@ -1,5 +1,5 @@
-# Build copies
-build/
+# Build dir
+build
 
 # Logs dir
-logs/
+logs
