@@ -1,2 +1,2 @@
 # Faceless
-Privacy and safety messenger
+Privacy and safety messenger.
