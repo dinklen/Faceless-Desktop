@@ -1,0 +1,24 @@
+name: Run Tests
+
+on: [push, pull_requests]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          echo "Installing tools... " # Install C++ and CMake
+          sudo apt-get update
+          sudo apt-get install -y cmake g++
+      
+      - name: C++ tests
+        run: |
+          echo "Building the tests..." # Build the C++ tests
+          mkdir build && cd build
+          cmake .. && make
+
+          echo "Starting the tests..." # Run the tests
+          ./tests
