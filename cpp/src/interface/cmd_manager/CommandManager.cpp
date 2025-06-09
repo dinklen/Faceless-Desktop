@@ -46,7 +46,7 @@ CommandManager::CommandManager() {
                 return nullptr;
             }
             std::cout << "Login successful" << std::endl; // ! temp
-            return std::make_unique<UserPageState>();
+            return std::make_unique<UserPageState>(args[1]);
         }},
 
         {"quit", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {

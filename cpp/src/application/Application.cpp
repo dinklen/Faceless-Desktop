@@ -21,7 +21,7 @@ Application::Application() {
 
 // Event loop
 void Application::run() {
-    std::cout << "Faceless, v1.0\n"
+    std::cout << "Faceless, v0.1.1-alpha\n"
     << "Write \"help\" to get more info\n"
     << std::endl;
 

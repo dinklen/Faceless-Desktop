@@ -12,8 +12,7 @@
 
 // Display method
 void UserPageState::display() {
-    //std::cout << nickname_ + "> ";
-    std::cout << "user_nick> ";
+    std::cout << nickname_ + "> ";
 }
 
 // State handler
