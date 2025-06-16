@@ -27,9 +27,6 @@ private:
 
     CommandManager(const CommandManager&) = delete;
     CommandManager& operator=(const CommandManager&) = delete;
-
-    // Singletone copy
-    static std::unique_ptr<CommandManager> instance_;
     
     // States commands storage
     std::unordered_map<StateType, std::unordered_map<std::string, CommandFunc>> stateCommands_;

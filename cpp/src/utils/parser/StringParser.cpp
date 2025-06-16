@@ -2,13 +2,13 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
-// Input strings parser method
-std::vector<std::string> parser::parseInput(std::string input) {
+// Handler input parser
+std::vector<std::string> parser::parseHandlerInput(std::string input) {
     std::vector<std::string> output;
     
     size_t pos = 0;
-    std::string token;
 
     while ((pos = input.find(' ')) != std::string::npos) {
         output.push_back(input.substr(0, pos));
@@ -16,5 +16,15 @@ std::vector<std::string> parser::parseInput(std::string input) {
     }
     if (!input.empty()) output.push_back(input);
 
+    return output;
+}
+
+// Chat commands parser
+std::vector<std::string> parser::parseChatCommand(std::string input) {
+    std::vector<std::string> output;
+
+    if (std::size(input) > 2 && input.front() == '{' && input.back() == '}') {
+        output.push_back(input.substr(1, std::size(input)-2));
+    }
     return output;
 }

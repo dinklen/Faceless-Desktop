@@ -12,14 +12,14 @@
 
 // Display method
 void UserPageState::display() {
-    std::cout << nickname_ + "> ";
+    std::cout << account_->getNickname() + "> ";
 }
 
 // State handler
 std::unique_ptr<StateContext> UserPageState::handler(std::string input) {
     const auto& commands = CommandManager::getInstance().getCommands(StateType::User);
 
-    std::vector<std::string> args = parser::parseInput(input);
+    std::vector<std::string> args = parser::parseHandlerInput(input);
 
     if (args.empty()) {
         std::cerr << "Invalid input. Use [help] to get more info about commands" << std::endl; // ! temp. Replace to error
@@ -30,6 +30,7 @@ std::unique_ptr<StateContext> UserPageState::handler(std::string input) {
     if (it != std::end(commands)) {
         return it->second(args);
     }
+    
     std::cerr << "Unknown command. Use [help] to get more info about commands" << std::endl; // ! temp. Replace to error
     return nullptr;
 }

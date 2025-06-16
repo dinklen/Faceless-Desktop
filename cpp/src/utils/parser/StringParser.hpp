@@ -5,6 +5,9 @@
 
 // Parser methods
 namespace parser {
-    // Input strings parser
-    std::vector<std::string> parseInput(std::string input);
+    // Handler strings parser
+    std::vector<std::string> parseHandlerInput(std::string input);
+
+    // Chat commands parser
+    std::vector<std::string> parseChatCommand(std::string input);
 };

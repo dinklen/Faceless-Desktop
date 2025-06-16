@@ -21,9 +21,6 @@ private:
     Application(const Application&) = delete;
     Application& operator=(const Application&) = delete;
 
-    // Single copy
-    static std::unique_ptr<Application> instance;
-
     // States tracker
     std::unique_ptr<StateContext> currentState_;
 };
