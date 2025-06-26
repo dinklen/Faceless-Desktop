@@ -1,7 +1,7 @@
-#include "application/Application.hpp"
+#include "../include/core/application/Application.hpp"
 
 // main.
 int main() {
-    Application::getInstance().run();
+    faceless::core::application::Application::getInstance().run();
     return 0;
 }

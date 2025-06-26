@@ -4,9 +4,12 @@
 
 #include <memory>
 #include <string>
+#include <expected>
+
+namespace faceless::interface::states {
 
 // Welcome page state class
-class WelcomePageState final: public StateContext {
+class WelcomePageState final: public faceless::interface::context::StateContext {
 public:
     // Welcome page state methods
     explicit WelcomePageState() = default;
@@ -20,9 +23,11 @@ public:
     // Virtual methods
     void display() override;
 
-    std::unique_ptr<StateContext> handler(std::string input) override;
+    std::expected<std::unique_ptr<faceless::interface::context::StateContext>, faceless::interface::errors::InterfaceError> handler(std::string input) override;
 
-    constexpr StateType getType() const noexcept override {
-        return StateType::Welcome;
+    constexpr faceless::interface::context::StateType getType() const noexcept override {
+        return faceless::interface::context::StateType::Welcome;
     }
 };
+
+} // namespace faceless::interface::states

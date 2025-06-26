@@ -1,17 +1,19 @@
 #pragma once
 
-#include "../../include/interface/StateContext.hpp"
+#include "../../interface/StateContext.hpp"
 
 #include <memory>
 
+namespace faceless::core::application {
+
 // Application manager class
-class Application {
+class Application final {
 public:
     // Singletone
     static Application& getInstance();
 
     // Event loop
-    void run();
+    [[noreturn]] void run();
 
 private:
     // Singletone methods
@@ -22,5 +24,7 @@ private:
     Application& operator=(const Application&) = delete;
 
     // States tracker
-    std::unique_ptr<StateContext> currentState_;
+    std::unique_ptr<faceless::interface::context::StateContext> currentState_;
 };
+
+} // namespace faceless::core::application

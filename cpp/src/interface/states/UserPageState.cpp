@@ -2,13 +2,21 @@
 #include "../../../include/interface/states/UserPageState.hpp"
 #include "../../../include/interface/cmd_manager/CommandManager.hpp"
 
-#include "../../utils/parser/StringParser.hpp"
+#include "../../../include/utils/parser/StringParser.hpp"
 
 #include <memory>
 #include <string>
 #include <vector>
+#include <expected>
 #include <iostream>
 #include <unordered_map>
+
+namespace context = faceless::interface::context;
+namespace cmd_manager = faceless::interface::cmd_manager;
+namespace utils = faceless::utils;
+namespace i_errors = faceless::interface::errors;
+
+namespace faceless::interface::states {
 
 // Display method
 void UserPageState::display() {
@@ -16,21 +24,20 @@ void UserPageState::display() {
 }
 
 // State handler
-std::unique_ptr<StateContext> UserPageState::handler(std::string input) {
-    const auto& commands = CommandManager::getInstance().getCommands(StateType::User);
+std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> UserPageState::handler(std::string input) {
+    const auto& commands = cmd_manager::CommandManager::getInstance().getCommands(context::StateType::User);
 
-    std::vector<std::string> args = parser::parseHandlerInput(input);
+    std::vector<std::string> args = utils::parser::parseHandlerInput(input);
 
     if (args.empty()) {
-        std::cerr << "Invalid input. Use [help] to get more info about commands" << std::endl; // ! temp. Replace to error
-        return nullptr;
+        return std::unexpected(i_errors::InterfaceError::UnknownCommand);
     }
 
-    auto it = commands.find(args[0]);
-    if (it != std::end(commands)) {
+    if (auto it = commands.find(args[0]); it != std::end(commands)) {
         return it->second(args);
     }
     
-    std::cerr << "Unknown command. Use [help] to get more info about commands" << std::endl; // ! temp. Replace to error
-    return nullptr;
+    return std::unexpected(i_errors::InterfaceError::UnknownCommand);
 }
+
+} // namespace faceless::interface::states

@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace faceless::models::message {
+
 // Message types
 enum class MessageType {
     Text,
@@ -11,7 +13,7 @@ enum class MessageType {
 };
 
 // Message class
-class Message {
+class Message final {
 public:
     Message(MessageType type, std::string info): type_(type), info_(info) {}
 
@@ -22,3 +24,5 @@ private:
     MessageType type_;
     std::string info_; // ! temp. Replace to struct
 };
+
+} // namespace faceless::models::message

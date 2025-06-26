@@ -5,9 +5,13 @@
 #include "../../models/chat/ChatModel.hpp"
 
 #include <memory>
+#include <string>
+#include <expected>
+
+namespace faceless::interface::states {
 
 // Chat state class
-class ChatState final: public StateContext {
+class ChatState final: public faceless::interface::context::StateContext {
 public:
     // Chat state methods
     explicit ChatState(): chat_(std::move(nullptr)) {}
@@ -19,18 +23,20 @@ public:
     ChatState& operator=(ChatState&&) = default;
 
     // Chat move method
-    void changeChat(std::unique_ptr<Chat> newChat);
+    void changeChat(std::unique_ptr<faceless::models::chat::Chat> newChat);
 
     // Virtual methods
     void display() override;
 
-    std::unique_ptr<StateContext> handler(std::string input) override;
+    std::expected<std::unique_ptr<faceless::interface::context::StateContext>, faceless::interface::errors::InterfaceError> handler(std::string input) override;
     
-    constexpr StateType getType() const noexcept override {
-        return StateType::Chat;
+    constexpr faceless::interface::context::StateType getType() const noexcept override {
+        return faceless::interface::context::StateType::Chat;
     }
 
 private:
     // Chat pointer
-    std::unique_ptr<Chat> chat_;
+    std::unique_ptr<faceless::models::chat::Chat> chat_;
 };
+
+} // namespace faceless::interface::states

@@ -1,8 +1,13 @@
 #pragma once
 
+#include "InterfaceErrors.hpp"
+
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <expected>
+
+namespace faceless::interface::context {
 
 // States types
 enum class StateType {
@@ -23,8 +28,10 @@ public:
     virtual void display() = 0;
 
     // States handler
-    virtual std::unique_ptr<StateContext> handler(std::string input) = 0;
+    virtual std::expected<std::unique_ptr<StateContext>, faceless::interface::errors::InterfaceError> handler(std::string input) = 0;
     
     // State type info
     virtual constexpr StateType getType() const noexcept = 0;
 };
+
+} // namespace faceless::interface::context

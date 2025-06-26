@@ -2,8 +2,10 @@
 
 #include <string>
 
+namespace faceless::models::user {
+
 // User data class
-class User {
+class User final {
 public:
     explicit User(const std::string nickname): nickname_(nickname) {}
 
@@ -13,3 +15,5 @@ private:
     // User nickname
     std::string nickname_;
 };
+
+} // namespace faceless::models::user

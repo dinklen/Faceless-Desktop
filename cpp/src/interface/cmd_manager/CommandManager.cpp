@@ -3,6 +3,7 @@
 #include "../../../include/interface/states/UserPageState.hpp"
 #include "../../../include/interface/states/WelcomePageState.hpp"
 #include "../../../include/interface/states/ChatState.hpp"
+#include "../../../include/interface/InterfaceErrors.hpp"
 
 #include "../../../include/models/chat/ChatModel.hpp"
 #include "../../../include/models/user/UserModel.hpp"
@@ -11,7 +12,16 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <expected>
 #include <unordered_map>
+
+// Declare short namespaces names
+namespace context = faceless::interface::context;
+namespace states = faceless::interface::states;
+namespace models = faceless::models;
+namespace i_errors = faceless::interface::errors;
+
+namespace faceless::interface::cmd_manager {
 
 // Static initializer. Singletone
 CommandManager& CommandManager::getInstance() {
@@ -22,8 +32,8 @@ CommandManager& CommandManager::getInstance() {
 // Private constructor. Register states commands
 CommandManager::CommandManager() {
     // Welcome page state commands
-    stateCommands_[StateType::Welcome] = {
-        {"help", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {
+    stateCommands_[context::StateType::Welcome] = {
+        {"help", [](const std::vector<std::string>&) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             std::cout << "Commands:\n"
             << "[help] - use it to get more info about commands\n"
             << "[sign_up] - use it to create new account\n"
@@ -35,40 +45,38 @@ CommandManager::CommandManager() {
             return std::move(nullptr);
         }},
 
-        {"sign_up", [](const std::vector<std::string>& args) -> std::unique_ptr<StateContext> {
+        {"sign_up", [](const std::vector<std::string>& args) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             if (std::size(args) != 3) {
-                std::cerr << "Invalid command format. For more info use [help <command>]" << std::endl; // ! Replace to struct errors
-                return std::move(nullptr);
+                return std::unexpected(i_errors::InterfaceError::InvalidCommandFormat);
             }
             std::cout << "Account created" << std::endl; // ! temp
             return std::move(nullptr);
         }},
 
-        {"start_session", [](const std::vector<std::string>& args) -> std::unique_ptr<StateContext> {
+        {"start_session", [](const std::vector<std::string>& args) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             if (std::size(args) != 3) {
-                std::cerr << "Usage: start <login> <password>" << std::endl; // ! Replace to struct errors
-                return std::move(nullptr);
+                return std::unexpected(i_errors::InterfaceError::InvalidCommandFormat);
             }
             // Login logic will be here
             std::cout << "Login successful" << std::endl; // ! temp
 
-            auto& pool = StateContext::getStatePool();
-            if ((pool.find(StateType::User)) == std::end(pool)) {
-                pool[StateType::User] = std::make_unique<UserPageState>(std::move(std::make_unique<User>(std::move(args[1]))));
+            auto& pool = context::StateContext::getStatePool();
+            if ((pool.find(context::StateType::User)) == std::end(pool)) {
+                pool[context::StateType::User] = std::make_unique<states::UserPageState>(std::move(std::make_unique<models::user::User>(std::move(args[1]))));
             }
 
-            return std::move(pool.find(StateType::User)->second);
+            return std::move(pool.find(context::StateType::User)->second);
         }},
 
-        {"quit", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {
+        {"quit", [](const std::vector<std::string>&) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             std::cout << "Exiting..." << std::endl;
             exit(0); // ! temp. Replace to safety exit from starter
         }}
     };
 
     // User page state commands
-    stateCommands_[StateType::User] = {
-        {"help", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {
+    stateCommands_[context::StateType::User] = {
+        {"help", [](const std::vector<std::string>&) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             std::cout << "Commands:\n"
             << "[help] - use it to get more info about commands\n"
             << "[loc] - use it to get your current location\n"
@@ -80,7 +88,7 @@ CommandManager::CommandManager() {
             return std::move(nullptr);
         }},
 
-        {"plinf", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {
+        {"plinf", [](const std::vector<std::string>&) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             std::cout << "*current location*\n" << std::endl; // ! temp
             return std::move(nullptr);
         }},
@@ -93,49 +101,50 @@ CommandManager::CommandManager() {
         // create --chat jfd --folder dfsa
         // goto <location>
 
-        {"quit", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {
+        {"quit", [](const std::vector<std::string>&) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             std::cout << "Logging out...\n" << std::endl;
 
-            auto& pool = StateContext::getStatePool();
-            return std::move(pool.find(StateType::Welcome)->second);
+            auto& pool = context::StateContext::getStatePool();
+            return std::move(pool.find(context::StateType::Welcome)->second);
         }},
 
-        {"open_chat", [](const std::vector<std::string>& args) -> std::unique_ptr<StateContext> {
-            if (std::size(args) < 2) {
-                std::cout << "Invalid command format. Usage [help] for more info." << std::endl;
-                return std::move(nullptr);
+        {"open_chat", [](const std::vector<std::string>& args) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
+            if (std::size(args) != 2) {
+                return std::unexpected(i_errors::InterfaceError::InvalidCommandFormat);
             }
             
             // ! temp. Simulate chat creation. Should be taken from storage.
-            User user("*nickname*");
-            std::vector<User> users = {user};
-            std::unique_ptr<Chat> chat = std::make_unique<Chat>(ChatType::Personal, users);
+            models::user::User user("*nickname*");
+            std::vector<models::user::User> users = {user};
+            std::unique_ptr<models::chat::Chat> chat = std::make_unique<models::chat::Chat>(models::chat::ChatType::Personal, users);
 
-            auto& pool = StateContext::getStatePool();
-            if ((pool.find(StateType::Chat)) == std::end(pool)) {
-                pool[StateType::Chat] = std::make_unique<ChatState>();
+            auto& pool = context::StateContext::getStatePool();
+            if ((pool.find(context::StateType::Chat)) == std::end(pool)) {
+                pool[context::StateType::Chat] = std::make_unique<states::ChatState>();
             }
             
-            if (auto* chatState = dynamic_cast<ChatState*>(pool.find(StateType::Chat)->second.get())) {
+            if (auto* chatState = dynamic_cast<states::ChatState*>(pool.find(context::StateType::Chat)->second.get())) {
                 chatState->changeChat(std::move(chat));
             }
 
-            return std::move(pool.find(StateType::Chat)->second); // ! temp. SELECT field = chat info struct
+            return std::move(pool.find(context::StateType::Chat)->second); // ! temp. SELECT field = chat info struct
         }}
     };
 
     // Chat commands
-    stateCommands_[StateType::Chat] = {
-        {"quit", [](const std::vector<std::string>&) -> std::unique_ptr<StateContext> {
+    stateCommands_[context::StateType::Chat] = {
+        {"quit", [](const std::vector<std::string>&) -> std::expected<std::unique_ptr<context::StateContext>, i_errors::InterfaceError> {
             std::cout << "Closing..." << std::endl;
 
-            auto& pool = StateContext::getStatePool();
-            return std::move(pool.find(StateType::User)->second);
+            auto& pool = context::StateContext::getStatePool();
+            return std::move(pool.find(context::StateType::User)->second);
         }}
     };
 }
 
 // The function that returns commands for the corresponding states
-const std::unordered_map<std::string, CommandManager::CommandFunc>& CommandManager::getCommands(StateType state) {
+const std::unordered_map<std::string, CommandManager::CommandFunc>& CommandManager::getCommands(context::StateType state) {
     return stateCommands_.find(state)->second; // !. Add errors
 }
+
+} // namespace faceless::interface::cmd_manager

@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+namespace faceless::models::message {
+
 // ! temp. Replace to data struct
 MessageType Message::getType() const {
     return type_;
@@ -11,3 +13,5 @@ MessageType Message::getType() const {
 std::string Message::getInfo() const {
     return info_;
 }
+
+} // namespace faceless::models::message
